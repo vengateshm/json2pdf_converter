@@ -47,4 +47,4 @@ Request Body
 ```
 # Upcoming usecases
 - Resume generator
-- Medicine prescription
+- Multi page pdf generation
