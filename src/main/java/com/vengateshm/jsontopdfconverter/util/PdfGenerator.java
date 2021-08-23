@@ -68,9 +68,39 @@ public class PdfGenerator {
                 table.addCell(cell);
             }
 
+            PdfPTable amtDetailsTable = new PdfPTable(2);
+            amtDetailsTable.setWidths(new float[]{0.7f, 0.3f});
+            amtDetailsTable.addCell(getNoBorderAmountDetailCell("Total Amount ", billRequest.isIncludeTaxDetail() ? cellFont : headerFont));
+            amtDetailsTable.addCell(getNoBorderAmountDetailCell(String.valueOf(billRequest.getTotalAmount()), billRequest.isIncludeTaxDetail() ? cellFont : headerFont));
+
+            if (billRequest.isIncludeTaxDetail()) {
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(" ", cellFont));
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(" ", cellFont));
+
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(billRequest.getRoundOffText(), cellFont));
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell("-" + billRequest.getRoundOffAmount(), cellFont));
+
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(billRequest.getGstText(), cellFont));
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(String.valueOf(billRequest.getGstAmount()), cellFont));
+
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(billRequest.getCentralGstText(), cellFont));
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(String.valueOf(billRequest.getCentralGstAmount()), cellFont));
+
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(billRequest.getStateGstText(), cellFont));
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(String.valueOf(billRequest.getStateGstAmount()), cellFont));
+
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(" ", cellFont));
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(" ", cellFont));
+
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell("Grand Total", headerFont));
+                amtDetailsTable.addCell(getNoBorderAmountDetailCell(String.valueOf(billRequest.getGrandTotal()), headerFont));
+            }
+
             PdfWriter.getInstance(document, out);
             document.open();
             document.add(table);
+            document.add(new Paragraph(" ")); // Empty line for new line behaviour
+            document.add(amtDetailsTable);
             document.close();
         } catch (DocumentException e) {
             logger.error("Error occurred {0} : ", e);
@@ -103,5 +133,25 @@ public class PdfGenerator {
         }
 
         return new ByteArrayInputStream(out.toByteArray());
+    }
+
+    public static void emptyLine(Paragraph paragraph, int noOfLines) {
+        for (int i = 0; i < noOfLines; i++) {
+            paragraph.add(new Paragraph(" "));
+        }
+    }
+
+    public static PdfPCell getNoBorderAmountDetailCell(String text, Font font) {
+        PdfPCell cell = new PdfPCell(new Phrase(text, font));
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cell.setVerticalAlignment(Element.ALIGN_CENTER);
+        return cell;
+    }
+
+    public static PdfPCell getNoBorderEmptyCell() {
+        PdfPCell cell = new PdfPCell();
+        cell.setBorder(PdfPCell.NO_BORDER);
+        return cell;
     }
 }
