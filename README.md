@@ -45,3 +45,6 @@ Request Body
 	"includeTaxDetail":true
 }
 ```
+# Upcoming usecases
+- Resume generator
+- Medicine prescription
